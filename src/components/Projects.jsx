@@ -1,179 +1,160 @@
-import { useState, useEffect, useRef } from "react";
-import { Github, ArrowUpRight } from "lucide-react";
+import { Github, ExternalLink, Users } from "lucide-react";
 import CONTENT from "../content.jsx";
-import { Reveal, Eyebrow } from "../hooks.jsx";
+import { Reveal, SectionHeader } from "../hooks.jsx";
 
-/* ctx.roundRect landed in Safari 16. Older iPhones would throw without this. */
-if (typeof CanvasRenderingContext2D !== "undefined" && !CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-    const rad = Math.min(typeof r === "number" ? r : 0, w / 2, h / 2);
-    this.moveTo(x + rad, y);
-    this.arcTo(x + w, y, x + w, y + h, rad);
-    this.arcTo(x + w, y + h, x, y + h, rad);
-    this.arcTo(x, y + h, x, y, rad);
-    this.arcTo(x, y, x + w, y, rad);
-    this.closePath();
-    return this;
-  };
-}
-
-/* Deterministic generative artwork per project, seeded by hue */
-function ProjectArt({ kind, hue }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = canvas.offsetWidth,
-      h = canvas.offsetHeight;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const g = ctx.createLinearGradient(0, 0, w, h);
-    g.addColorStop(0, `hsl(${hue} 62% 17%)`);
-    g.addColorStop(1, `hsl(${hue + 24} 48% 8%)`);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
-    ctx.strokeStyle = `hsla(${hue} 90% 78% / 0.5)`;
-    ctx.lineWidth = 1;
-
-    const rnd = (() => {
-      let s = hue * 977;
-      return () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648);
-    })();
-
-    if (kind === "maze") {
-      const c = 26;
-      for (let x = 0; x < w; x += c)
-        for (let y = 0; y < h; y += c) {
-          ctx.beginPath();
-          if (rnd() > 0.5) {
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + c, y + c);
-          } else {
-            ctx.moveTo(x + c, y);
-            ctx.lineTo(x, y + c);
-          }
-          ctx.globalAlpha = 0.25 + rnd() * 0.5;
-          ctx.stroke();
-        }
-    } else if (kind === "bodies") {
-      ctx.strokeStyle = `hsla(${hue} 90% 80% / 0.45)`;
-      ctx.beginPath();
-      ctx.moveTo(0, h * 0.86);
-      ctx.lineTo(w, h * 0.86);
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      for (let i = 0; i < 11; i++) {
-        const s = 16 + rnd() * 26;
-        const x = 24 + rnd() * (w - 60);
-        const y = h * 0.86 - s / 2 - rnd() * h * 0.5;
-        ctx.fillStyle = `hsla(${hue + rnd() * 40} 72% 68% / ${0.2 + rnd() * 0.4})`;
-        ctx.strokeStyle = `hsla(${hue + 20} 90% 82% / 0.55)`;
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        if (rnd() > 0.45) ctx.arc(x, y, s / 2, 0, Math.PI * 2);
-        else ctx.roundRect(x - s / 2, y - s / 2, s, s, 4);
-        ctx.fill();
-        ctx.stroke();
-      }
-    } else if (kind === "orbit") {
-      const cx = w / 2,
-        cy = h / 2;
-      for (let i = 7; i >= 1; i--) {
-        ctx.beginPath();
-        ctx.ellipse(cx, cy, i * 26, i * 8.5, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = `hsla(${hue + i * 6} 85% 74% / ${0.1 + i * 0.055})`;
-        ctx.lineWidth = 1.3;
-        ctx.stroke();
-      }
-      const core = ctx.createRadialGradient(cx, cy, 2, cx, cy, 34);
-      core.addColorStop(0, "#000");
-      core.addColorStop(0.62, "#000");
-      core.addColorStop(1, `hsla(${hue + 30} 90% 70% / 0)`);
-      ctx.fillStyle = core;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 34, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(cx, cy, 22, 0, Math.PI * 2);
-      ctx.strokeStyle = `hsla(${hue + 40} 95% 80% / 0.7)`;
-      ctx.lineWidth = 1.6;
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-    const v = ctx.createLinearGradient(0, h * 0.4, 0, h);
-    v.addColorStop(0, "rgba(0,0,0,0)");
-    v.addColorStop(1, "rgba(0,0,0,0.45)");
-    ctx.fillStyle = v;
-    ctx.fillRect(0, 0, w, h);
-  }, [kind, hue]);
-
-  return <canvas ref={ref} aria-hidden="true" />;
-}
-
-function ProjectCard({ p, i }) {
-  const [shotFailed, setShotFailed] = useState(false);
+function TechList({ items, label }) {
   return (
-    <div className="card proj-card">
-      <div className="proj-art">
-        <span className="proj-num">{String(i + 1).padStart(2, "0")}</span>
-        {/* Drop a PNG at p.shot to replace the generative placeholder */}
-        {p.shot && !shotFailed ? (
-          <img src={p.shot} alt={`${p.title} screenshot`} loading="lazy" onError={() => setShotFailed(true)} />
-        ) : (
-          <ProjectArt kind={p.art} hue={p.hue} />
-        )}
-      </div>
-      <div className="proj-body">
-        <h3>{p.title}</h3>
-        <p>{p.blurb}</p>
-        <div className="proj-tech">
-          {p.tech.map((t) => (
-            <span key={t} className="chip">
-              {t}
-            </span>
-          ))}
-        </div>
-        <div className="proj-actions">
-          <a className="btn" href={p.repo || CONTENT.github} target="_blank" rel="noreferrer">
-            <Github size={15} /> Code
-          </a>
-          {p.demo ? (
-            <a className="btn ghost" href={p.demo} target="_blank" rel="noreferrer">
-              Live demo <ArrowUpRight size={15} className="arrow" />
-            </a>
-          ) : (
-            <span className="chip" style={{ alignSelf: "center", padding: "9px 13px" }}>
-              Demo in progress
-            </span>
-          )}
-        </div>
-      </div>
+    <ul className="chips" aria-label={label}>
+      {items.map((t) => (
+        <li key={t} className="chip mono">
+          {t}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Links({ title, repo, demo }) {
+  return (
+    <div className="proj-links">
+      <a className="btn btn-sm" href={repo} target="_blank" rel="noopener noreferrer" aria-label={`${title} on GitHub (opens in a new tab)`}>
+        <Github size={15} aria-hidden="true" /> GitHub
+      </a>
+      {demo && (
+        <a
+          className="btn btn-sm btn-primary"
+          href={demo.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${title}: ${demo.label} (opens in a new tab)`}
+        >
+          <ExternalLink size={15} aria-hidden="true" /> {demo.label}
+        </a>
+      )}
     </div>
+  );
+}
+
+/* Ordered data path, rendered as a labelled step list */
+function Flow({ steps, label }) {
+  return (
+    <div className="flow">
+      <p className="flow-label mono">{label}</p>
+      <ol>
+        {steps.map((s, i) => (
+          <li key={s}>
+            <span className="flow-n mono" aria-hidden="true">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            {s}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function FeaturedProject({ p, index }) {
+  const titleId = `proj-${p.id}`;
+  return (
+    <Reveal as="article" className="proj" aria-labelledby={titleId}>
+      <div className="proj-media">
+        {p.shot && (
+          <figure className="shot">
+            <img src={p.shot.src} alt={p.shot.alt} width="1280" height="720" loading="lazy" decoding="async" />
+            {p.shot.caption && <figcaption className="mono">{p.shot.caption}</figcaption>}
+          </figure>
+        )}
+        {p.flow && <Flow steps={p.flow} label={p.shot ? "Request path" : "Data path"} />}
+      </div>
+
+      <div className="proj-body">
+        <header>
+          <p className="proj-index mono">
+            {String(index + 1).padStart(2, "0")}
+            {p.badge && (
+              <span className="badge">
+                <Users size={12} aria-hidden="true" /> {p.badge}
+              </span>
+            )}
+          </p>
+          <h3 id={titleId}>{p.title}</h3>
+          <p className="proj-tagline">{p.tagline}</p>
+        </header>
+
+        <p className="proj-purpose">{p.purpose}</p>
+
+        {p.specs && (
+          <ul className="specs mono" aria-label="Key design parameters">
+            {p.specs.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+        )}
+
+        <div className="proj-block">
+          <h4 className="mono">Engineering challenges</h4>
+          <ul className="bullets">
+            {p.challenges.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="proj-block contrib">
+          <h4 className="mono">My contribution</h4>
+          <p>{p.contribution}</p>
+        </div>
+
+        <TechList items={p.tech} label={`${p.title} technologies`} />
+        <Links title={p.title} repo={p.repo} demo={p.demo} />
+      </div>
+    </Reveal>
+  );
+}
+
+function SmallProject({ p }) {
+  return (
+    <Reveal as="article" className="card mini">
+      {p.shot && <img className="mini-shot" src={p.shot.src} alt={p.shot.alt} width="1280" height="720" loading="lazy" decoding="async" />}
+      <h4>{p.title}</h4>
+      <p>{p.body}</p>
+      <TechList items={p.tech} label={`${p.title} technologies`} />
+      <Links title={p.title} repo={p.repo} demo={{ href: p.demo, label: "Live demo" }} />
+    </Reveal>
   );
 }
 
 export default function Projects() {
   return (
-    <section className="pf-section" id="projects">
-      <div className="pf-wrap">
-        <Eyebrow index="04">Projects</Eyebrow>
-        <Reveal>
-          <h2 className="display pf-title">Featured work</h2>
-          <p className="pf-lede">
-            Three simulations, all running live in the browser. No install, no setup, just open one and start pulling
-            things around.
-          </p>
-        </Reveal>
-        <div className="proj-grid" style={{ marginTop: 44 }}>
+    <section className="section section-wide" id="projects" aria-labelledby="projects-title">
+      <div className="wrap">
+        <SectionHeader
+          id="projects"
+          index="02"
+          label="Featured projects"
+          title="Selected work"
+          lede="Four projects that show how I approach backend design, real-time data, AI integration, and algorithms. Each one states what I contributed."
+        />
+
+        <div className="proj-list">
           {CONTENT.projects.map((p, i) => (
-            <Reveal key={p.title} delay={(i % 2) * 110}>
-              <ProjectCard p={p} i={i} />
-            </Reveal>
+            <FeaturedProject key={p.id} p={p} index={i} />
           ))}
+        </div>
+
+        <div className="more">
+          <h3 className="more-title mono">More projects</h3>
+          <div className="more-grid">
+            {CONTENT.moreProjects.map((p) => (
+              <SmallProject key={p.title} p={p} />
+            ))}
+          </div>
+          <p className="more-link">
+            <a href={CONTENT.github} target="_blank" rel="noopener noreferrer">
+              All repositories on GitHub <ExternalLink size={14} aria-hidden="true" />
+            </a>
+          </p>
         </div>
       </div>
     </section>

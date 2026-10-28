@@ -1,113 +1,100 @@
-import { useState } from "react";
-import { Github, Linkedin, Mail, ArrowUpRight, Send, Check } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Github, Linkedin, Mail, Download, Copy, Check, ArrowUpRight } from "lucide-react";
 import CONTENT from "../content.jsx";
-import { Reveal, Eyebrow } from "../hooks.jsx";
+import { Reveal, SectionHeader } from "../hooks.jsx";
+
+/* Copy with a fallback for browsers or contexts where the Clipboard API is unavailable */
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+}
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [sent, setSent] = useState(false);
-  const ready = form.name.trim() && form.email.trim() && form.message.trim();
+  const [status, setStatus] = useState("");
+  const timer = useRef(0);
+  useEffect(() => () => clearTimeout(timer.current), []);
 
-  const send = () => {
-    if (!ready) return;
-    setSent(true);
-    setTimeout(() => {
-      setSent(false);
-      setForm({ name: "", email: "", message: "" });
-    }, 3200);
+  const copy = async () => {
+    const ok = await copyText(CONTENT.email);
+    setStatus(ok ? "Email address copied" : "Copy failed. Select the address above instead.");
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setStatus(""), 2800);
   };
 
-  const socials = [
-    { icon: Github, label: "GitHub", sub: "Code and commits", href: CONTENT.github },
-    { icon: Linkedin, label: "LinkedIn", sub: "Work history and updates", href: CONTENT.linkedin },
-    { icon: Mail, label: "Email", sub: CONTENT.email, href: `mailto:${CONTENT.email}` },
+  const links = [
+    { icon: Github, label: "GitHub", sub: "github.com/guyWhoWantsToCode", href: CONTENT.github },
+    { icon: Linkedin, label: "LinkedIn", sub: "linkedin.com/in/abhyudaysingh7", href: CONTENT.linkedin },
   ];
 
   return (
-    <section className="pf-section" id="contact">
-      <div className="pf-wrap">
-        <Eyebrow index="08">Contact</Eyebrow>
-        <div className="contact-grid">
-          <Reveal>
-            <h2 className="display pf-title">Let us build something</h2>
-            <p className="pf-lede">
-              Internships, research, or a project that needs a second pair of hands. I read everything and reply within
-              a day or two.
+    <section className="section" id="contact" aria-labelledby="contact-title">
+      <div className="wrap">
+        <SectionHeader
+          id="contact"
+          index="06"
+          label="Contact"
+          title="Get in touch"
+          lede="If you're hiring, working on something interesting, or want to talk about a project, email is the quickest way to reach me."
+        />
+        <Reveal className="contact">
+          <div className="contact-main card">
+            <p className="card-label mono">
+              <Mail size={15} aria-hidden="true" /> Email
             </p>
-            <div className="social-list">
-              {socials.map((s) => {
-                const Icon = s.icon;
-                return (
-                  <a key={s.label} className="social" href={s.href} target="_blank" rel="noreferrer">
-                    <Icon size={18} style={{ color: "var(--accent)" }} />
-                    <span className="who">
-                      <b>{s.label}</b>
-                      <span>{s.sub}</span>
-                    </span>
-                    <ArrowUpRight size={16} style={{ color: "var(--faint)" }} className="arrow" />
-                  </a>
-                );
-              })}
+            <a className="contact-email" href={`mailto:${CONTENT.email}`}>
+              {CONTENT.email}
+            </a>
+            <div className="contact-actions">
+              <a className="btn btn-primary" href={`mailto:${CONTENT.email}`}>
+                <Mail size={16} aria-hidden="true" /> Send an email
+              </a>
+              <button type="button" className="btn" onClick={copy}>
+                {status.startsWith("Email") ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />} Copy address
+              </button>
+              <a className="btn" href={CONTENT.resume.href} download={CONTENT.resume.filename}>
+                <Download size={16} aria-hidden="true" /> Download resume
+              </a>
             </div>
-          </Reveal>
+            <p className="copy-status" role="status" aria-live="polite">
+              {status}
+            </p>
+          </div>
 
-          <Reveal delay={120}>
-            <div className="card" style={{ padding: 28 }}>
-              <div className="field">
-                <label className="mono" htmlFor="cn">
-                  Name
-                </label>
-                <input
-                  id="cn"
-                  value={form.name}
-                  placeholder="Your name"
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-              </div>
-              <div className="field">
-                <label className="mono" htmlFor="ce">
-                  Email
-                </label>
-                <input
-                  id="ce"
-                  type="email"
-                  value={form.email}
-                  placeholder="you@domain.com"
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-              </div>
-              <div className="field">
-                <label className="mono" htmlFor="cm">
-                  Message
-                </label>
-                <textarea
-                  id="cm"
-                  value={form.message}
-                  placeholder="What are you working on?"
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-                <button
-                  className="btn primary"
-                  onClick={send}
-                  disabled={!ready}
-                  style={{ opacity: ready ? 1 : 0.45, cursor: ready ? "pointer" : "not-allowed" }}
-                >
-                  <Send size={15} /> Send message
-                </button>
-                {sent && (
-                  <span className="sent">
-                    <Check size={16} /> Sent. Talk soon.
-                  </span>
-                )}
-              </div>
-              <p style={{ color: "var(--faint)", fontSize: 12.5, marginTop: 16 }}>
-                Front end only right now. Point it at Formspree, Resend, or a route handler to deliver mail.
-              </p>
-            </div>
-          </Reveal>
-        </div>
+          <ul className="contact-links">
+            {links.map((l) => {
+              const Icon = l.icon;
+              return (
+                <li key={l.label}>
+                  <a className="card link-card" href={l.href} target="_blank" rel="noopener noreferrer" aria-label={`${l.label} (opens in a new tab)`}>
+                    <Icon size={20} aria-hidden="true" />
+                    <span>
+                      <b>{l.label}</b>
+                      <small>{l.sub}</small>
+                    </span>
+                    <ArrowUpRight size={16} className="arrow" aria-hidden="true" />
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </Reveal>
       </div>
     </section>
   );
