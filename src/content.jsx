@@ -1,238 +1,216 @@
-import {
-  Terminal, Layers, Server, Cpu, Wrench,
-  GraduationCap, Users, Rocket, Trophy, Flag, BookOpen,
-} from "lucide-react";
+/*
+  All user-facing content lives here. Edit this file and the whole site updates.
+  Source of truth: the October 2026 resume (public/resume.pdf).
+  The resume contains a phone number; it is intentionally NOT used anywhere on the site.
+*/
+
+const SITE_URL = "https://portfolio-gules-ten-53.vercel.app";
+const GITHUB = "https://github.com/guyWhoWantsToCode";
 
 const CONTENT = {
+  siteUrl: SITE_URL,
   name: "Abhyuday Singh",
-  school: "Computer Science Student @ UTSA",
-  role: "Aspiring AI/ML Engineer • Software Developer • Motorsport Enthusiast",
-  intro:
-    "I build interactive web applications, algorithm visualizations, and AI-powered software.",
-  location: "San Antonio, Texas",
-  university: "The University of Texas at San Antonio",
+  location: "San Antonio, TX",
   email: "sabhyuday14@gmail.com",
-  github: "https://github.com/guyWhoWantsToCode",
-  linkedin: "https://linkedin.com/in/yourhandle",
-  photo: "/headshot.jpg",
+  github: GITHUB,
+  linkedin: "https://linkedin.com/in/abhyudaysingh7",
+  resume: { href: "/resume.pdf", filename: "Abhyuday-Singh-Resume.pdf" },
+  photo: { src: "/headshot.jpg", width: 480, height: 600 },
 
-  bio: [
-    "I am a computer science student at UTSA, class of 2029, one year in and building whatever I am curious about at the time.",
-    "Most of what I make is interactive: physics you can push around, algorithms you can watch think, simulations that make an abstract idea concrete. I like the point where the maths stops being a formula and starts being something on screen that behaves correctly.",
-    "Outside of programming, you will probably find me watching Formula 1, experimenting with new technologies, or building side projects that teach me something new. Race engineering is a constraint problem with a stopwatch attached, which turns out to be excellent practice for the day job.",
-  ],
-
-  skills: [
-    { icon: Terminal, label: "Languages", items: ["Python", "Java", "JavaScript", "C"] },
-    { icon: Layers, label: "Frontend", items: ["HTML", "CSS", "React", "Next.js", "Tailwind"] },
-    { icon: Server, label: "Backend", items: ["Node.js", "Express"] },
-    { icon: Cpu, label: "AI", items: ["Machine Learning", "OpenAI API", "Data Analysis"] },
-    { icon: Wrench, label: "Tools", items: ["Git", "GitHub", "VS Code", "Docker"] },
-  ],
-
-  projects: [
-    {
-      title: "Physics Sandbox",
-      repo: "https://github.com/guyWhoWantsToCode/physics-sandbox",
-      demo: "https://guywhowantstocode.github.io/physics-sandbox/",
-      shot: "/screenshots/physics-sandbox.png",
-      blurb:
-        "Drop rigid bodies into a scene, then change the rules underneath them while it runs: gravity, buoyancy, explosions, even a black hole.",
-      tech: ["JavaScript", "Matter.js", "HTML", "CSS", "GitHub Pages"],
-      hue: 212,
-      art: "bodies",
-    },
-    {
-      title: "Pathfinder",
-      repo: "https://github.com/guyWhoWantsToCode/Pathfinder",
-      demo: "https://guywhowantstocode.github.io/Pathfinder/",
-      shot: "/screenshots/pathfinder.png",
-      blurb:
-        "Five search algorithms crossing a grid you draw yourself, with a comparison mode that runs two side by side to show how much work each one wastes.",
-      tech: ["JavaScript", "HTML", "CSS", "GitHub Pages"],
-      hue: 152,
-      art: "maze",
-    },
-    {
-      title: "Singularity",
-      repo: "https://github.com/guyWhoWantsToCode/black-hole-simulator",
-      demo: "https://guywhowantstocode.github.io/black-hole-simulator/",
-      shot: "/screenshots/singularity.png",
-      blurb:
-        "Hundreds of particles under Newtonian gravity with live telemetry. Click anywhere to drop a second black hole and watch every orbit fall apart.",
-      tech: ["Vanilla JavaScript", "Canvas", "HTML", "CSS"],
-      hue: 268,
-      art: "orbit",
-    },
-  ],
-
-  timeline: [
-    {
-      icon: GraduationCap,
-      period: "Aug 2021 — May 2025",
-      title: "Claudia Taylor Johnson High School",
-      org: "San Antonio, TX · 3.95 GPA",
-      body: "Qualified for the DECA State Competition in Automotive Marketing and picked up the President's Volunteer Service Award at silver level for 250 or more hours.",
-    },
-    {
-      icon: Users,
-      period: "Aug 2022 — Sep 2025",
-      title: "Volunteer Hour Coordinator",
-      org: "Hope for Triumph, non-profit",
-      body: "Built tracking systems for more than 50 volunteers, validated the records, and produced the reports staff actually used. My first real lesson in why clean data matters more than clever data.",
-    },
-    {
-      icon: Rocket,
-      period: "Aug 2025 — May 2029",
-      title: "BS Computer Science",
-      org: "The University of Texas at San Antonio",
-      body: "Working through the core sequence in programming, data structures, and discrete mathematics, and teaching myself the web stack on the side.",
-    },
-    {
-      icon: Trophy,
-      period: "Oct 2025 · Jan 2026",
-      title: "First two hackathons",
-      org: "Weekend builds",
-      body: "Two events, two finished projects. Best lesson so far is that scope is the only constraint that really matters, everything else is negotiable at 3am.",
-    },
-    {
-      icon: Terminal,
-      period: "2025 — present",
-      title: "Personal projects",
-      org: "Seven repositories and counting",
-      body: "Physics sandboxes, pathfinding visualisers, black holes, race car setup tools. Built to answer a question I had, kept because they turned out useful to other people.",
-    },
-    {
-      icon: Flag,
-      period: "2027 →",
-      title: "Internships",
-      org: "Goals",
-      body: "Software engineering experience while the degree is still in progress, ideally somewhere the simulation and graphics side of what I build is relevant.",
-    },
-    {
-      icon: BookOpen,
-      period: "2029 →",
-      title: "Master's degree",
-      org: "Graduate study, computer science",
-      body: "Continuing straight into a master's after the bachelor's. The specialisation gets decided by whichever coursework I cannot stop thinking about between now and then.",
-    },
-  ],
-
-  posts: [
-    { title: "Building my first AI application", cat: "AI", date: "Coming soon", read: "8 min", body: "What nobody tells you about the gap between a notebook that works and a product someone else can open." },
-    { title: "What hackathons taught me", cat: "Notes", date: "Coming soon", read: "5 min", body: "Four events, four postmortems, and the one habit that changed how I start any project." },
-    { title: "Learning machine learning", cat: "AI", date: "Coming soon", read: "11 min", body: "The order I wish I had learned things in, and the three resources that were actually worth the time." },
-    { title: "Designing better software", cat: "Engineering", date: "Coming soon", read: "7 min", body: "Notes on structure, naming, and why the second version is always smaller than the first." },
-  ],
-
-  learning: [
-    { label: "React and Next.js", pct: 62 },
-    { label: "Data structures in Java", pct: 48 },
-    { label: "TypeScript", pct: 55 },
-    { label: "Machine learning fundamentals", pct: 30 },
-  ],
-
-  quotes: [
-    { q: "Simplicity is prerequisite for reliability.", a: "Edsger W. Dijkstra" },
-    { q: "Premature optimization is the root of all evil.", a: "Donald Knuth" },
-    { q: "Talk is cheap. Show me the code.", a: "Linus Torvalds" },
-    { q: "Programs must be written for people to read.", a: "Harold Abelson" },
-    { q: "Make it work, make it right, make it fast.", a: "Kent Beck" },
-    { q: "Controlling complexity is the essence of programming.", a: "Brian Kernighan" },
-    { q: "Deleted code is debugged code.", a: "Jeff Sickel" },
-  ],
-
-  resume: {
-    contact: ["San Antonio, TX", "sabhyuday14@gmail.com", "github.com/guyWhoWantsToCode"],
-    sections: [
-      {
-        label: "Education",
-        items: [
-          {
-            head: "The University of Texas at San Antonio",
-            sub: "B.S. Computer Science",
-            date: "Aug 2025 — May 2029",
-          },
-          {
-            head: "Claudia Taylor Johnson High School",
-            sub: "San Antonio, TX · 3.95 GPA",
-            date: "Aug 2021 — May 2025",
-          },
-        ],
-      },
-      {
-        label: "Projects",
-        items: [
-          {
-            head: "Physics Sandbox",
-            sub: "JavaScript, Matter.js, HTML, CSS, GitHub Pages",
-            date: "Jul 2026",
-            bullets: [
-              "Built an interactive 2D rigid body physics sandbox running in the browser with real-time simulation.",
-              "Implemented configurable gravity, buoyancy, explosions, and black hole forces adjustable mid-simulation.",
-              "Deployed with GitHub Pages and managed version control through Git and GitHub.",
-            ],
-          },
-          {
-            head: "Pathfinder",
-            sub: "JavaScript, HTML, CSS, GitHub Pages",
-            date: "2026",
-            bullets: [
-              "Implemented five search algorithms, BFS, DFS, Dijkstra, A*, and greedy best-first, with node by node visualisation.",
-              "Added a comparison mode running two algorithms side by side to expose differences in nodes explored.",
-              "Built maze generation using recursive backtracking and Prim's algorithm with adjustable grid resolution.",
-            ],
-          },
-          {
-            head: "Singularity, Black Hole Simulator",
-            sub: "Vanilla JavaScript, Canvas, HTML, CSS",
-            date: "2026",
-            bullets: [
-              "Simulated hundreds of particles under Newtonian gravity with accretion disc rendering, no external libraries.",
-              "Built a live telemetry panel reporting frame rate, particle count, average speed, and mass consumed.",
-            ],
-          },
-        ],
-      },
-      {
-        label: "Experience",
-        items: [
-          {
-            head: "Volunteer Hour Coordinator",
-            sub: "Hope for Triumph, non-profit",
-            date: "Aug 2022 — Sep 2025",
-            bullets: [
-              "Designed tracking systems for 50 or more volunteers and generated reports used by staff.",
-              "Applied data validation techniques to keep volunteer records accurate under deadline.",
-            ],
-          },
-        ],
-      },
-      {
-        label: "Skills",
-        items: [
-          { head: "Languages", sub: "Python, Java, JavaScript, HTML, CSS" },
-          { head: "Tools", sub: "Git, GitHub, VS Code, Microsoft Excel, Microsoft Word" },
-        ],
-      },
-      {
-        label: "Awards and activities",
-        items: [
-          { head: "DECA State Competition qualifier, Automotive Marketing", date: "2024" },
-          { head: "President's Volunteer Service Award, Silver, 250+ hours", date: "2024" },
-        ],
-      },
+  hero: {
+    status: "Computer Science student at UTSA",
+    // Non-breaking hyphens (U+2011) keep "full-stack" and "AI-powered" from splitting across lines.
+    headline: "I build backend systems, full‑stack apps, and AI‑powered software.",
+    summary:
+      "My projects so far include async APIs, real-time data pipelines, and applications built on LLM APIs, each with a working interface on top.",
+    areas: ["Backend", "Full-stack", "AI / ML"],
+    // Rendered as a key/value profile card next to the headline.
+    profile: [
+      ["school", "UTSA · B.S. Computer Science"],
+      ["graduating", "May 2029"],
+      ["focus", "Backend · Full-stack · AI / ML"],
+      ["builds", "Async APIs, WebSocket and UDP pipelines, LLM-backed apps"],
+      ["stack", "Python · FastAPI · TypeScript · React · Next.js · PostgreSQL"],
+      ["based", "San Antonio, TX"],
     ],
   },
 
-  sections: [
+  about: {
+    paragraphs: [
+      "I'm a computer science student at the University of Texas at San Antonio, graduating in 2029. I'm most interested in backend and full-stack engineering, and in building software where an AI model is one dependable part of a larger system.",
+      "The projects I'm proudest of sit on the backend: a scheduler that shares a fixed Gemini API budget fairly across competing agents, and a telemetry pipeline that turns raw UDP packets into lap-by-lap analysis. I like problems where the interesting part is how a system behaves under constraints such as rate limits, bounded queues, and data streams that never wait for you.",
+      "I build projects end to end, from API design and automated tests with pytest to the React or Next.js interface on top. I also enjoy visualization work like pathfinding and physics simulations, where an algorithm turns into something you can watch.",
+    ],
+    interests: ["Software engineering", "Backend development", "Full-stack development", "Artificial intelligence and machine learning"],
+  },
+
+  education: {
+    school: "The University of Texas at San Antonio (UTSA)",
+    degree: "B.S. in Computer Science",
+    date: "Expected May 2029",
+    place: "San Antonio, TX",
+    gpa: "3.43 / 4.00",
+    coursework: [
+      "Data Structures",
+      "Object-Oriented Programming",
+      "Discrete Mathematics",
+      "Linear Algebra",
+      "C Programming",
+    ],
+  },
+
+  experience: [
+    {
+      role: "Volunteer Hour Coordinator",
+      org: "Hope for Triumph (nonprofit)",
+      date: "Aug 2022 – Sep 2025",
+      bullets: [
+        "Maintained and validated volunteer-hour records for 50+ participants, using organized tracking systems to improve consistency of reporting.",
+        "Prepared activity summaries for nonprofit staff and coordinated accurate reporting under deadlines.",
+      ],
+    },
+  ],
+
+  activities: [
+    {
+      label: "Hackathons",
+      title: "RowdyHacks and CodeRED",
+      body: "Collaborated with teammates on time-constrained project builds.",
+    },
+    {
+      label: "Award",
+      title: "President's Volunteer Service Award",
+      body: "Silver level (250+ hours) and Bronze level (100+ hours).",
+    },
+    {
+      label: "Competition",
+      title: "DECA",
+      body: "Qualified for the state competition in Automotive Marketing.",
+    },
+  ],
+
+  skills: [
+    { label: "Languages", items: ["Python", "TypeScript", "JavaScript", "Java", "C", "SQL"] },
+    { label: "Frontend", items: ["React", "Next.js", "HTML", "CSS", "Tailwind CSS"] },
+    { label: "Backend", items: ["FastAPI", "REST APIs", "WebSockets", "Asynchronous Python"] },
+    { label: "Data & tools", items: ["PostgreSQL", "Supabase", "Git", "GitHub", "pytest", "Streamlit"] },
+    { label: "AI", items: ["OpenAI API", "Gemini API"] },
+  ],
+
+  /* Featured projects: shown as full case-study cards. */
+  projects: [
+    {
+      id: "starflow",
+      title: "StarFlow",
+      tagline: "Multi-Agent AI Request Scheduler",
+      badge: "Team project",
+      purpose:
+        "When several AI agents share one rate-limited API, a single agent that floods or retries can starve the rest. StarFlow sits in front of Gemini and decides whose request is released next, so every agent keeps a protected share of capacity.",
+      specs: ["10 requests/s shared budget", "20-request bounded queues"],
+      challenges: [
+        "Guaranteeing each agent its own capacity while redistributing unused requests to agents with waiting work.",
+        "Bounding every agent's queue so an overloaded agent is rejected instead of draining the shared budget.",
+        "Streaming live scheduler state over WebSockets and storing per-second metrics in PostgreSQL.",
+      ],
+      contribution:
+        "I independently developed the backend scheduler: fair API-budget allocation, bounded request queues, Gemini dispatch, live WebSocket updates, and PostgreSQL metrics. The React dashboard that consumes them was built by the team.",
+      tech: ["Python", "FastAPI", "asyncio", "PostgreSQL", "WebSockets", "Gemini API"],
+      repo: `${GITHUB}/star_flow`,
+      demo: { href: "https://starflow.select", label: "Live site" },
+      shot: {
+        src: "/screenshots/starflow.jpg",
+        alt: "StarFlow landing page: the headline 'One API. Multiple Agents. Fair Access.' over an Earth and galaxy background.",
+        caption: "Team-built frontend",
+      },
+      flow: ["Agent requests", "Bounded queues", "Fair-share scheduler", "Gemini API"],
+    },
+    {
+      id: "f1-telemetry-coach",
+      title: "F1 Telemetry Coach",
+      tagline: "Real-Time Lap Analysis",
+      purpose:
+        "Reads race telemetry streamed over UDP, records each lap, and compares a reference run against a new one so a driver can see where time is gained or lost through a corner.",
+      challenges: [
+        "Aligning laps by track distance rather than time, so runs at different speeds can be compared point by point.",
+        "Detecting corner events and measuring braking, throttle pickup, and minimum speed.",
+        "Keeping the core processing logic covered by automated tests.",
+      ],
+      contribution:
+        "I developed the application end to end: UDP data ingestion, lap recording, distance-aligned comparisons, braking, throttle, and corner analysis, REST endpoints, a React dashboard, and automated tests for the core processing.",
+      tech: ["Python", "FastAPI", "React", "TypeScript", "UDP", "pytest"],
+      repo: `${GITHUB}/f1-telemetry-coach`,
+      flow: ["UDP telemetry", "Lap recorder", "Distance alignment", "Corner analysis", "React dashboard"],
+    },
+    {
+      id: "ai-resume-reviewer",
+      title: "AI Resume Reviewer",
+      tagline: "Full-Stack AI Application",
+      purpose:
+        "Signed-in users upload a PDF or DOCX resume and receive structured AI-generated feedback on it.",
+      challenges: [
+        "Extracting usable text from both PDF and DOCX uploads.",
+        "Validating the model's output against a Zod schema so the interface renders structured feedback instead of free-form text.",
+        "Building authenticated user and file workflows on Supabase.",
+      ],
+      contribution:
+        "I built the authenticated upload flow, PDF/DOCX text extraction, OpenAI-powered feedback, Zod validation of structured output, and the Supabase-backed user and file workflows.",
+      tech: ["Next.js", "TypeScript", "Supabase", "OpenAI API", "Zod"],
+      repo: `${GITHUB}/ai-resume-reviewer`,
+      demo: { href: "https://ai-resume-reviewer-neon.vercel.app", label: "Live demo" },
+      shot: {
+        src: "/screenshots/ai-resume-reviewer.jpg",
+        alt: "AI Resume Reviewer landing page with the headline 'Get your resume reviewed by AI in seconds' and a sample report card.",
+        caption: "Landing page",
+      },
+    },
+    {
+      id: "pathfinder",
+      title: "Pathfinder",
+      tagline: "Graph Search Visualizer",
+      purpose:
+        "An interactive grid for watching graph-search algorithms explore a map one node at a time, so the differences between them are visible instead of abstract.",
+      challenges: [
+        "Implementing five algorithms with different strategies: BFS, DFS, Dijkstra, A*, and greedy best-first search.",
+        "A side-by-side comparison mode that runs two algorithms on the same grid.",
+        "Generating mazes procedurally for the algorithms to solve.",
+      ],
+      contribution:
+        "I built the visualizer, all five search algorithms, the comparison mode, and the maze generation.",
+      tech: ["JavaScript", "HTML", "CSS"],
+      repo: `${GITHUB}/Pathfinder`,
+      demo: { href: "https://guywhowantstocode.github.io/Pathfinder/", label: "Live demo" },
+      shot: {
+        src: "/screenshots/pathfinder.jpg",
+        alt: "Pathfinder interface with algorithm controls, a search grid with start and target nodes, and a run readout panel.",
+        caption: "A* search, ready to run",
+      },
+    },
+  ],
+
+  /* Smaller projects: compact cards. All demos were checked and respond. */
+  moreProjects: [
+    {
+      title: "Physics Sandbox",
+      body: "A 2D rigid-body physics sandbox where gravity, buoyancy, explosions, and a black hole can be changed while the simulation runs.",
+      tech: ["JavaScript", "Matter.js", "HTML", "CSS"],
+      repo: `${GITHUB}/physics-sandbox`,
+      demo: "https://guywhowantstocode.github.io/physics-sandbox/",
+    },
+    {
+      title: "Singularity",
+      body: "A black-hole simulator with hundreds of particles under Newtonian gravity, live telemetry, and no external libraries.",
+      tech: ["JavaScript", "Canvas", "HTML", "CSS"],
+      repo: `${GITHUB}/black-hole-simulator`,
+      demo: "https://guywhowantstocode.github.io/black-hole-simulator/",
+    },
+  ],
+
+  nav: [
     { id: "about", label: "About" },
-    { id: "skills", label: "Skills" },
-    { id: "signals", label: "Now" },
     { id: "projects", label: "Projects" },
-    { id: "timeline", label: "Timeline" },
-    { id: "writing", label: "Writing" },
-    { id: "resume", label: "Resume" },
+    { id: "skills", label: "Skills" },
+    { id: "experience", label: "Experience" },
+    { id: "activities", label: "Activities" },
     { id: "contact", label: "Contact" },
   ],
 };

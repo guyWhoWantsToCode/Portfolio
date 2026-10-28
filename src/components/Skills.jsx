@@ -1,38 +1,30 @@
 import CONTENT from "../content.jsx";
-import { Reveal, Eyebrow } from "../hooks.jsx";
+import { Reveal, SectionHeader } from "../hooks.jsx";
 
 export default function Skills() {
   return (
-    <section className="pf-section" id="skills">
-      <div className="pf-wrap">
-        <Eyebrow index="02">Skills</Eyebrow>
-        <Reveal>
-          <h2 className="display pf-title">The toolkit</h2>
-          <p className="pf-lede">What I reach for, roughly in the order I reach for it.</p>
-        </Reveal>
-
-        <div className="skill-grid" style={{ marginTop: 44 }}>
-          {CONTENT.skills.map((cat, i) => {
-            const Icon = cat.icon;
-            return (
-              <Reveal key={cat.label} delay={i * 90}>
-                <div className="card skill-card">
-                  <div className="ico">
-                    <Icon size={18} />
-                  </div>
-                  <h3>{cat.label}</h3>
-                  <ul>
-                    {cat.items.map((it) => (
-                      <li key={it}>
-                        <i />
-                        {it}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            );
-          })}
+    <section className="section" id="skills" aria-labelledby="skills-title">
+      <div className="wrap">
+        <SectionHeader
+          id="skills"
+          index="03"
+          label="Technical skills"
+          title="Tools I work with"
+          lede="Technologies I have used in the projects above and in coursework."
+        />
+        <div className="skills-grid">
+          {CONTENT.skills.map((g, i) => (
+            <Reveal key={g.label} as="section" className="card skill" delay={i * 50} aria-label={g.label}>
+              <h3 className="card-label mono">{g.label}</h3>
+              <ul className="chips">
+                {g.items.map((s) => (
+                  <li key={s} className="chip">
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>

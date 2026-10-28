@@ -1,59 +1,66 @@
 import { useState, useEffect } from "react";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
 import CONTENT from "../content.jsx";
-import { scrollTo } from "../hooks.jsx";
 
-export default function Navbar({ theme, toggleTheme, active }) {
-  const [stuck, setStuck] = useState(false);
+export default function Navbar({ active, progress }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setStuck(window.scrollY > 24);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const go = (id) => {
-    setOpen(false);
-    scrollTo(id);
-  };
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    const onResize = () => window.innerWidth >= 860 && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [open]);
 
   return (
-    <nav className={`pf-nav ${stuck ? "stuck" : ""}`}>
-      <div className="pf-nav-in">
-        <button className="pf-mark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <span className="dot" />
-          {CONTENT.name}
+    <header className={`nav ${open ? "is-open" : ""}`} id="top">
+      <div className="wrap nav-inner">
+        <a className="brand" href="#top" aria-label={`${CONTENT.name}, back to top`}>
+          <span className="brand-mark mono" aria-hidden="true">AS</span>
+          <span className="brand-name">{CONTENT.name}</span>
+        </a>
+
+        <button
+          type="button"
+          className="nav-toggle"
+          aria-expanded={open}
+          aria-controls="site-menu"
+          aria-label={open ? "Close menu" : "Open menu"}
+          onClick={() => setOpen((o) => !o)}
+        >
+          {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
         </button>
 
-        <div className="pf-links">
-          {CONTENT.sections.map((s) => (
-            <button key={s.id} className={`pf-link ${active === s.id ? "on" : ""}`} onClick={() => go(s.id)}>
-              {s.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="pf-navtools">
-          <button className="icon-btn" onClick={toggleTheme} aria-label="Switch theme">
-            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-          <button className="icon-btn pf-burger" onClick={() => setOpen((o) => !o)} aria-label="Menu">
-            {open ? <X size={17} /> : <Menu size={17} />}
-          </button>
-        </div>
+        <nav id="site-menu" className="nav-menu" aria-label="Primary">
+          <ul>
+            {CONTENT.nav.map((n) => (
+              <li key={n.id}>
+                <a
+                  href={`#${n.id}`}
+                  aria-current={active === n.id ? "location" : undefined}
+                  onClick={() => setOpen(false)}
+                >
+                  {n.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <a
+            className="btn btn-sm"
+            href={CONTENT.resume.href}
+            download={CONTENT.resume.filename}
+            onClick={() => setOpen(false)}
+          >
+            <Download size={15} aria-hidden="true" /> Resume
+          </a>
+        </nav>
       </div>
-
-      <div
-        className="pf-sheet"
-        style={{ maxHeight: open ? 520 : 0, transition: "max-height 0.45s cubic-bezier(.2,.8,.3,1)" }}
-      >
-        {CONTENT.sections.map((s) => (
-          <button key={s.id} onClick={() => go(s.id)}>
-            {s.label}
-          </button>
-        ))}
-      </div>
-    </nav>
+      <div className="nav-progress" aria-hidden="true" style={{ transform: `scaleX(${progress})` }} />
+    </header>
   );
 }
